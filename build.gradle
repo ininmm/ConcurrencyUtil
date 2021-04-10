@@ -1,18 +1,32 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'io.codearte.nexus-staging'
+
+
 buildscript {
     ext {
         kotlin_version = "1.4.21"
         kotlin_coroutines = "1.4.2"
+        dokka_version = "1.4.20.2-dev-62"
+        gradle_nexus_staginh_plugin_version = "0.22.0"
     }
     repositories {
         google()
-        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+        mavenCentral()
+        maven {
+            url 'https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev'
+            content {
+                includeGroup('org.jetbrains.dokka')
+            }
+        }
         maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.1.3"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$gradle_nexus_staginh_plugin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -22,8 +36,29 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        jcenter() {
+            content {
+                // https://youtrack.jetbrains.com/issue/IDEA-261387
+                includeModule("org.jetbrains.trove4j", "trove4j")
+
+                // Remove when https://github.com/korlibs/korte/issues/13 is closed
+                includeModule("com.soywiz.korlibs.korte", "korte-jvm")
+
+                // Remove when https://github.com/Kotlin/kotlinx.html/issues/81 is closed
+                includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
+
+                //Remove when https://github.com/JetBrains/markdown/issues/64 is closed
+                includeModule("org.jetbrains", "markdown")
+            }
+        }
         maven { url "https://jitpack.io" }
+        maven {
+            url 'https://maven.pkg.jetbrains.space/kotlin/p/dokka/dev'
+            content {
+                includeGroup('org.jetbrains.dokka')
+            }
+        }
     }
 }
 
